@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weihnachtsgeschenke für die Erzieher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: calc(100% - 60px); /* Platz für Zähler */
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .char-counter {
+            display: inline-block;
+            font-size: 14px;
+            margin-left: 5px;
+            color: #555;
+            vertical-align: middle;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .delete-btn {
+            background-color: #DC3545;
+            margin-left: 5px;
+        }
+        .delete-btn:hover {
+            background-color: #A71D2A;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .table-container {
+            overflow-x: auto; /* Ermöglicht horizontales Scrollen */
+        }
+    </style>
+</head>
+<body>
+    <h1>Weihnachtsgeschenke für die Erzieher der Wilden Wichtel Heimsheim</h1>
+    <p>Bitte trage deine Idee für ein Geschenk ein. Jedes Geschenk sollte in achtfacher Ausführung hergestellt werden.</p>
+
+    <form id="entryForm">
+        <label for="name">Name:</label>
+        <div>
+            <input type="text" id="name" placeholder="Dein Name" maxlength="100" oninput="updateCounter('name')">
+            <span class="char-counter" id="nameCounter">0/100</span>
+        </div>
+        <label for="task">Was:</label>
+        <div>
+            <input type="text" id="task" placeholder="Deine Geschenkidee" maxlength="100" oninput="updateCounter('task')">
+            <span class="char-counter" id="taskCounter">0/100</span>
+        </div>
+        <label for="extra">Zusätzliches Merkmal (optional):</label>
+        <div>
+            <input type="text" id="extra" placeholder="Zusatzinfo" maxlength="100" oninput="updateCounter('extra')">
+            <span class="char-counter" id="extraCounter">0/100</span>
+        </div>
+        <button type="button" onclick="addEntry()">Eintrag hinzufügen</button>
+    </form>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Was</th>
+                    <th>Zusätzlich</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody id="entryList">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let entries = [];
+
+        function updateCounter(fieldId) {
+            const input = document.getElementById(fieldId);
+            const counter = document.getElementById(`${fieldId}Counter`);
+            counter.textContent = `${input.value.length}/100`;
+        }
+
+        function addEntry() {
+            const name = document.getElementById("name").value.trim();
+            const task = document.getElementById("task").value.trim();
+            const extra = document.getElementById("extra").value.trim();
+
+            // Überprüfe, ob die Pflichtfelder ausgefüllt sind
+            if (!name || !task) {
+                alert("Bitte fülle die Pflichtfelder Name und Was aus!");
+                return;
+            }
+
+            // Füge den neuen Eintrag hinzu
+            entries.push({ name, task, extra: extra || "-" }); // "-" für leeres Feld
+            updateTable();
+
+            // Formular zurücksetzen
+            document.getElementById("entryForm").reset();
+            updateCounter('name');
+            updateCounter('task');
+            updateCounter('extra');
+        }
+
+        function deleteEntry(index) {
+            if (confirm("Möchtest du diesen Eintrag wirklich löschen?")) {
+                entries.splice(index, 1); // Entferne den Eintrag an der gegebenen Position
+                updateTable();
+            }
+        }
+
+        function updateTable() {
+            const tableBody = document.getElementById("entryList");
+            tableBody.innerHTML = "";
+            entries.forEach((entry, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${entry.name}</td>
+                    <td>${entry.task}</td>
+                    <td>${entry.extra}</td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteEntry(${index})">Löschen</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
